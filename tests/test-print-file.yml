@@ -1,0 +1,43 @@
+name: Test print-file option
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Copy fixture manifest to workspace
+        run: |
+          cp $GITHUB_WORKSPACE/actions/hardened/damienaicheh--update-android-manifest-package-action/v1.0.0/tests/fixtures/AndroidManifest.xml \
+             $GITHUB_WORKSPACE/AndroidManifest.xml
+
+      - id: action
+        uses: .
+        with:
+          android-manifest-path: ./AndroidManifest.xml
+          package-name: com.mycompany.app
+          app-name: MyCompanyApp
+          print-file: 'true'
+
+      - name: Assert package name was updated with print-file enabled
+        run: |
+          CONTENT=$(cat $GITHUB_WORKSPACE/AndroidManifest.xml)
+          echo "Manifest content:"
+          echo "$CONTENT"
+          if echo "$CONTENT" | grep -q 'com.mycompany.app'; then
+            echo "PASS: package name updated correctly"
+          else
+            echo "FAIL: package name was not updated to com.mycompany.app"
+            exit 1
+          fi
+
+      - name: Assert app name was updated with print-file enabled
+        run: |
+          CONTENT=$(cat $GITHUB_WORKSPACE/AndroidManifest.xml)
+          if echo "$CONTENT" | grep -q 'MyCompanyApp'; then
+            echo "PASS: app name updated correctly"
+          else
+            echo "FAIL: app name was not updated to MyCompanyApp"
+            exit 1
+          fi
