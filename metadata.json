@@ -1,7 +1,0 @@
-{
-  "owner": "damienaicheh",
-  "name": "update-android-manifest-package-action",
-  "visibility": "public",
-  "description": "Update the AndroidManifest.xml file",
-  "block_publish": false
-}
