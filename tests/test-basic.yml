@@ -1,4 +1,4 @@
-name: Test basic usage - update android manifest
+name: Test basic usage - update package and app name
 on:
   workflow_dispatch:
 jobs:
@@ -7,46 +7,46 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Copy fixture manifest to workspace
+      - name: Prepare AndroidManifest.xml
         run: |
-          cp $GITHUB_WORKSPACE/actions/hardened/damienaicheh--update-android-manifest-package-action/v1.0.0/tests/fixtures/AndroidManifest.xml \
-             $GITHUB_WORKSPACE/AndroidManifest.xml
+          cp "$GITHUB_WORKSPACE/tests/fixtures/AndroidManifest.xml" \
+             "$GITHUB_WORKSPACE/AndroidManifest-test.xml"
 
       - id: action
         uses: .
         with:
-          android-manifest-path: ./AndroidManifest.xml
-          package-name: com.example.newpackage
-          app-name: MyNewApp
+          android-manifest-path: AndroidManifest-test.xml
+          package-name: com.mycompany.myapp
+          app-name: MyApp
 
       - name: Assert package name was updated
         run: |
-          CONTENT=$(cat $GITHUB_WORKSPACE/AndroidManifest.xml)
-          echo "Manifest content:"
+          CONTENT=$(cat "$GITHUB_WORKSPACE/AndroidManifest-test.xml")
+          echo "File content:"
           echo "$CONTENT"
-          if echo "$CONTENT" | grep -q 'com.example.newpackage'; then
+          if echo "$CONTENT" | grep -q 'package="com.mycompany.myapp"'; then
             echo "PASS: package name updated correctly"
           else
-            echo "FAIL: package name was not updated to com.example.newpackage"
+            echo "FAIL: package name was not updated to 'com.mycompany.myapp'"
             exit 1
           fi
 
       - name: Assert app name was updated
         run: |
-          CONTENT=$(cat $GITHUB_WORKSPACE/AndroidManifest.xml)
-          if echo "$CONTENT" | grep -q 'MyNewApp'; then
+          CONTENT=$(cat "$GITHUB_WORKSPACE/AndroidManifest-test.xml")
+          if echo "$CONTENT" | grep -q 'android:label="MyApp"'; then
             echo "PASS: app name updated correctly"
           else
-            echo "FAIL: app name was not updated to MyNewApp"
+            echo "FAIL: app name was not updated to 'MyApp'"
             exit 1
           fi
 
       - name: Assert old package name is gone
         run: |
-          CONTENT=$(cat $GITHUB_WORKSPACE/AndroidManifest.xml)
-          if echo "$CONTENT" | grep -q 'com.example.oldpackage'; then
-            echo "FAIL: old package name still present"
+          CONTENT=$(cat "$GITHUB_WORKSPACE/AndroidManifest-test.xml")
+          if echo "$CONTENT" | grep -q 'package="com.example.app"'; then
+            echo "FAIL: old package name 'com.example.app' still present"
             exit 1
           else
-            echo "PASS: old package name removed"
+            echo "PASS: old package name is no longer present"
           fi

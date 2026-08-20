@@ -1,0 +1,46 @@
+name: versions
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  push:
+    branches:
+      - main
+      - releases/*
+    paths-ignore:
+      - '**.md'
+
+permissions: {}
+
+jobs:
+  local-version:
+    runs-on: ubuntu-latest
+    name: Update AndroidManifest.xml
+    steps:
+      - name: Checkout
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
+
+      - name: Update AndroidManifest.xml
+        uses: ./
+        with:
+          android-manifest-path: './samples/AndroidManifest.xml'
+          package-name: 'com.mycompany.app'
+          app-name: 'MyApp'
+          print-file: true
+
+      - name: Update AndroidManifest.xml
+        uses: ./
+        with:
+          android-manifest-path: './samples/AndroidManifest-1.xml'
+          package-name: 'com.mynew.app'
+          app-name: 'MyApp'
+          print-file: true
+
+      - name: Update AndroidManifest.xml without label tag
+        uses: ./
+        with:
+          android-manifest-path: './samples/AndroidManifest-2.xml'
+          package-name: 'com.mynew.app'
+          app-name: 'New app'
+          print-file: true

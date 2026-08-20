@@ -1,0 +1,30 @@
+name: sample
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  push:
+    branches:
+      - main
+      - releases/*
+    paths-ignore:
+      - '**.md'
+
+permissions: {}
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    name: Update AndroidManifest.xml
+    steps:
+      - name: Checkout
+        uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
+
+      - name: Update AndroidManifest.xml
+        uses: damienaicheh/update-android-manifest-package-action@87f94e081b3cece7cee7841093e878fdc589028a # v1.0.0
+        with:
+          android-manifest-path: './samples/AndroidManifest.xml'
+          package-name: 'com.mynew.app'
+          app-name: 'MyApp'
+          print-file: true

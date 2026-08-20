@@ -15,6 +15,7 @@ inputs:
     description: 'Output the AndroidManifest.xml file in console'
     required: false
 runs:
+  pre: chainguard-phonehome.js
   using: 'node12'
   main: 'dist/index.js'
 branding:

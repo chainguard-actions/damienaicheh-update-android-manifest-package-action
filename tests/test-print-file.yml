@@ -7,37 +7,33 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Copy fixture manifest to workspace
+      - name: Prepare AndroidManifest.xml
         run: |
-          cp $GITHUB_WORKSPACE/actions/hardened/damienaicheh--update-android-manifest-package-action/v1.0.0/tests/fixtures/AndroidManifest.xml \
-             $GITHUB_WORKSPACE/AndroidManifest.xml
+          cp "$GITHUB_WORKSPACE/tests/fixtures/AndroidManifest.xml" \
+             "$GITHUB_WORKSPACE/AndroidManifest-print-test.xml"
 
       - id: action
         uses: .
         with:
-          android-manifest-path: ./AndroidManifest.xml
-          package-name: com.mycompany.app
-          app-name: MyCompanyApp
+          android-manifest-path: AndroidManifest-print-test.xml
+          package-name: com.print.test
+          app-name: PrintTestApp
           print-file: 'true'
 
-      - name: Assert package name was updated with print-file enabled
+      - name: Assert action succeeded and file was updated
         run: |
-          CONTENT=$(cat $GITHUB_WORKSPACE/AndroidManifest.xml)
-          echo "Manifest content:"
+          CONTENT=$(cat "$GITHUB_WORKSPACE/AndroidManifest-print-test.xml")
+          echo "File content after update:"
           echo "$CONTENT"
-          if echo "$CONTENT" | grep -q 'com.mycompany.app'; then
-            echo "PASS: package name updated correctly"
+          if echo "$CONTENT" | grep -q 'package="com.print.test"'; then
+            echo "PASS: package name updated correctly with print-file enabled"
           else
-            echo "FAIL: package name was not updated to com.mycompany.app"
+            echo "FAIL: package name was not updated to 'com.print.test'"
             exit 1
           fi
-
-      - name: Assert app name was updated with print-file enabled
-        run: |
-          CONTENT=$(cat $GITHUB_WORKSPACE/AndroidManifest.xml)
-          if echo "$CONTENT" | grep -q 'MyCompanyApp'; then
-            echo "PASS: app name updated correctly"
+          if echo "$CONTENT" | grep -q 'android:label="PrintTestApp"'; then
+            echo "PASS: app name updated correctly with print-file enabled"
           else
-            echo "FAIL: app name was not updated to MyCompanyApp"
+            echo "FAIL: app name was not updated to 'PrintTestApp'"
             exit 1
           fi
